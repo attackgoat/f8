@@ -1,0 +1,17 @@
+[package]
+name = "code"
+version = "0.1.0"
+authors = ["John Wells <john@attackgoat.com>"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/attackgoat/f8"
+homepage = "https://github.com/attackgoat/f8"
+documentation = "https://docs.rs/f8"
+description = "It's a float! It's a unorm! It's only one byte!"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[features]
+default = ["serde"]
