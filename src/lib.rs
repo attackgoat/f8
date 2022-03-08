@@ -6,10 +6,12 @@
 #[macro_use]
 extern crate serde;
 
+const RECIP: f32 = 1.0 / ((u8::MAX) as f32 + 1.0);
+
 /// An 8-bit floating point number constrained to a value within the inclusive range of [0, 1].
 #[allow(non_camel_case_types)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct f8(u8);
 
 impl f8 {
@@ -36,8 +38,7 @@ impl From<u8> for f8 {
 impl From<f32> for f8 {
     #[inline]
     fn from(val: f32) -> Self {
-        const RECIP: f32 = 1.0 / u8::MAX as f32;
-        Self((val * RECIP) as _)
+        Self((val / RECIP) as _)
     }
 }
 
@@ -51,6 +52,21 @@ impl From<f8> for u8 {
 impl From<f8> for f32 {
     #[inline]
     fn from(val: f8) -> Self {
-        val.0 as f32 * u8::MAX as f32
+        val.0 as f32 / u8::MAX as f32
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic_conversions() {
+        assert_eq![0.0, f8::from(0).float()];
+        assert_eq![1.0, f8::from(255).float()];
+
+        assert_eq![0, f8::from(0.0).byte()];
+        assert_eq![1, f8::from(RECIP).byte()];
+        assert_eq![255, f8::from(1.0).byte()];
     }
 }
